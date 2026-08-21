@@ -1,4 +1,4 @@
-<#
+﻿<#
 .SYNOPSIS
     Génère une feuille de recertification des accès (1 ligne par personne + application/rôle)
     à partir d'un export d'audit d'accès — à faire remplir par les reviewers (managers/

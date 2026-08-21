@@ -1,4 +1,4 @@
-<#
+﻿<#
 .SYNOPSIS
     Traite une campagne de recertification remplie (générée par New-CertificationCampaign.ps1)
     et produit la liste des actions de remédiation (accès à révoquer) + un résumé.

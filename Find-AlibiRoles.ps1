@@ -1,4 +1,4 @@
-<#
+﻿<#
 .SYNOPSIS
     Repère les rôles/applications "alibi" — définis dans l'annuaire mais avec peu ou pas de
     membres réels — à partir d'un export d'audit d'accès.

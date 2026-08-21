@@ -1,4 +1,4 @@
-<#
+﻿<#
 .SYNOPSIS
     Détecte les violations de séparation des tâches (SoD — Separation of Duties) à partir
     d'un export d'audit d'accès (ex: produit par LDAP-App-Role-Audit).
