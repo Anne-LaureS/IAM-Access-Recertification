@@ -92,14 +92,15 @@ Lit la colonne `Decision` remplie (insensible à la casse) et produit :
 ## 📊 Exemple de bout en bout
 
 Avec les données d'exemple ([`sample-data/`](sample-data)) et la règle de démo dans
-[`sod-rules.json`](sod-rules.json) :
+[`sod-rules.json`](sod-rules.json), sortie réelle obtenue en exécutant les 4 scripts à la
+suite (testé de bout en bout sur Windows PowerShell 5.1) :
 
-```
-Find-SoDViolations.ps1     -> 1 violation : tesla cumule Scientists (accès direct) + rôle Italians
-Find-AlibiRoles.ps1        -> 1 candidat  : rôle Italians (Scientists), 1 seul membre
-New-CertificationCampaign  -> 14 lignes à revoir (1 par personne/accès)
-Complete-CertificationCampaign -> selon les décisions saisies, liste des révocations
-```
+| Étape | Sortie |
+|---|---|
+| [`Find-SoDViolations.ps1`](Find-SoDViolations.ps1) | [`SoD_Violations.csv`](SoD_Violations.csv) — 1 violation : `tesla` cumule Scientists (accès direct) + rôle Italians |
+| [`Find-AlibiRoles.ps1`](Find-AlibiRoles.ps1) | [`Alibi_Roles_Candidates.csv`](Alibi_Roles_Candidates.csv) — 1 candidat : rôle Italians (Scientists), 1 seul membre |
+| [`New-CertificationCampaign.ps1`](New-CertificationCampaign.ps1) | [`CertificationCampaign_2026-08-21.csv`](CertificationCampaign_2026-08-21.csv) — 14 lignes à revoir (1 par personne/accès), partiellement remplie ici à titre d'exemple |
+| [`Complete-CertificationCampaign.ps1`](Complete-CertificationCampaign.ps1) | [`Remediation_Actions.csv`](Remediation_Actions.csv) — révocations issues des décisions ci-dessus |
 
 ## 🔐 Sécurité & précautions
 
@@ -116,3 +117,7 @@ Complete-CertificationCampaign -> selon les décisions saisies, liste des révoc
 - Les révocations produites par `Complete-CertificationCampaign.ps1` sont une **liste
   d'actions à exécuter manuellement** (ou via votre outil de provisioning existant) — ce
   script ne modifie aucun annuaire lui-même.
+- **Fichiers `.ps1` et `.json` avec BOM UTF-8** : Windows PowerShell 5.1 lit mal les accents
+  sans ce marqueur en tête de fichier (texte corrompu, voire erreur de syntaxe). Si vous
+  éditez ces fichiers ou en ajoutez de nouveaux (ex: vos propres règles SoD), sauvegardez-les
+  en UTF-8 avec BOM (`utf-8-sig`), pas en UTF-8 simple.

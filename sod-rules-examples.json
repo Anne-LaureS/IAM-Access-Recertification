@@ -1,4 +1,4 @@
-[
+﻿[
   {
     "RuleName": "Finance — Créer un fournisseur + Approuver un paiement",
     "Access1": "Finance-ERP:VendorCreate",
