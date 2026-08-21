@@ -52,6 +52,11 @@ Les règles SoD sont définies dans un fichier JSON, une paire d'accès incompat
 Un `Role` vide dans la clé (`"Application:"`) désigne l'accès direct à l'application elle-même
 (pas via un rôle), au même format que la colonne `Role` de l'audit d'entrée.
 
+[`sod-rules-examples.json`](sod-rules-examples.json) est un catalogue de règles SoD classiques
+en entreprise (Finance, Achats, IT, RH, Sécurité, ITIL/SOX) — à adapter avec les vrais noms
+d'application/rôle de votre annuaire, pas exécutable tel quel contre `sample-data/` (qui ne
+contient que les groupes du serveur LDAP public de démo).
+
 ### 2. Détection des rôles alibi
 
 ```powershell

@@ -1,0 +1,38 @@
+[
+  {
+    "RuleName": "Finance — Créer un fournisseur + Approuver un paiement",
+    "Access1": "Finance-ERP:VendorCreate",
+    "Access2": "Finance-ERP:PaymentApproval",
+    "Comment": "Une même personne ne devrait pas pouvoir créer un fournisseur ET approuver les paiements vers ce fournisseur (risque de fournisseur fictif)."
+  },
+  {
+    "RuleName": "Achats — Créer un bon de commande + Approuver un bon de commande",
+    "Access1": "Purchasing:PurchaseOrderCreate",
+    "Access2": "Purchasing:PurchaseOrderApproval",
+    "Comment": "Séparation classique demandeur/approbateur pour éviter qu'une seule personne engage et valide une dépense."
+  },
+  {
+    "RuleName": "IT — Attribuer un accès + Approuver les demandes d'accès",
+    "Access1": "IAM-Platform:AccessProvisioning",
+    "Access2": "IAM-Platform:AccessApproval",
+    "Comment": "Celui qui exécute le provisioning ne devrait pas être aussi celui qui valide la demande en amont."
+  },
+  {
+    "RuleName": "RH/Paie — Modifier les données salariales + Valider la paie",
+    "Access1": "HR-Payroll:EmployeeDataEdit",
+    "Access2": "HR-Payroll:PayrollValidation",
+    "Comment": "Évite qu'une même personne modifie un salaire et valide ensuite le run de paie qui l'inclut."
+  },
+  {
+    "RuleName": "Sécurité — Administrer les comptes à privilèges + Auditer les journaux d'accès",
+    "Access1": "PAM:PrivilegedAccountAdmin",
+    "Access2": "SIEM:AuditLogReview",
+    "Comment": "L'administrateur des comptes à privilèges ne devrait pas être aussi celui qui contrôle les traces de ses propres actions."
+  },
+  {
+    "RuleName": "Développement — Déployer en production + Approuver les changements",
+    "Access1": "CI-CD:ProductionDeploy",
+    "Access2": "ChangeManagement:ChangeApproval",
+    "Comment": "Séparation build/déploiement vs validation du changement, classique en ITIL/SOX."
+  }
+]
