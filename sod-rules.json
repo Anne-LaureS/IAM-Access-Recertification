@@ -1,0 +1,7 @@
+[
+  {
+    "RuleName": "Démo mécanisme — double appartenance groupe parent + sous-groupe",
+    "Access1": "Scientists:Italians",
+    "Access2": "Scientists:"
+  }
+]
