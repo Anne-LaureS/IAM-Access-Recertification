@@ -19,14 +19,15 @@ Contrairement à `LDAP-App-Role-Audit`, ces 4 scripts ne dépendent d'aucune fon
 Windows — pur traitement CSV/JSON, testable et utilisable sous Windows, Linux ou macOS avec
 PowerShell 7+.
 
-## ⚙️ Les 4 scripts
+## ⚙️ Les 4 scripts (dans l'ordre d'exécution)
 
-| Script | Rôle |
-|---|---|
-| [`Find-SoDViolations.ps1`](Find-SoDViolations.ps1) | Détecte les personnes cumulant deux accès déclarés incompatibles |
-| [`Find-AlibiRoles.ps1`](Find-AlibiRoles.ps1) | Repère les rôles vides ou quasi-vides, candidats à nettoyer |
-| [`New-CertificationCampaign.ps1`](New-CertificationCampaign.ps1) | Génère une feuille de revue (1 ligne par personne + accès) |
-| [`Complete-CertificationCampaign.ps1`](Complete-CertificationCampaign.ps1) | Traite la feuille remplie en liste de révocations |
+| # | Script | Rôle | Sortie |
+|---|---|---|---|
+| 1 | [`Find-SoDViolations.ps1`](Find-SoDViolations.ps1) | Détecte les personnes cumulant deux accès déclarés incompatibles | `SoD_Violations.csv` |
+| 2 | [`Find-AlibiRoles.ps1`](Find-AlibiRoles.ps1) | Repère les rôles vides ou quasi-vides, candidats à nettoyer | `Alibi_Roles_Candidates.csv` |
+| 3 | [`New-CertificationCampaign.ps1`](New-CertificationCampaign.ps1) | Génère une feuille de revue (1 ligne par personne + accès) | `CertificationCampaign_AAAA-MM-JJ.csv` |
+| — | *(remplissage manuel de la colonne Decision par les reviewers)* | | |
+| 4 | [`Complete-CertificationCampaign.ps1`](Complete-CertificationCampaign.ps1) | Traite la feuille remplie en liste de révocations | `Remediation_Actions.csv` |
 
 ## ▶️ Utilisation
 
