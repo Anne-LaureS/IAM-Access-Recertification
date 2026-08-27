@@ -100,9 +100,10 @@ if ($violations.Count -gt 0) {
 else {
     Write-Host ""
     Write-Host "=== Aucune violation SoD trouvée ===" -ForegroundColor Green
-    # On exporte quand même un fichier vide (avec en-têtes) pour que le résultat soit
-    # toujours exploitable par un pipeline/script suivant, plutôt que de ne rien produire.
-    [PSCustomObject]@{ Person = ""; RuleName = ""; Access1 = ""; Access2 = "" } |
-        Select-Object * | Where-Object { $false } |
-        Export-Csv $OutputCsv -NoTypeInformation -Encoding UTF8
+    # On exporte quand même un fichier avec en-têtes pour que le résultat soit toujours
+    # exploitable par un pipeline/script suivant, plutôt que de ne rien produire. Export-Csv ne
+    # peut pas écrire des en-têtes à partir d'un pipeline vide (Where-Object { $false } produit
+    # 0 objet, donc 0 colonne détectée, donc un fichier réellement vide) : on écrit la ligne
+    # d'en-têtes directement à la place.
+    "Person,RuleName,Access1,Access2" | Out-File $OutputCsv -Encoding UTF8
 }
