@@ -33,6 +33,11 @@ if (-not (Test-Path $CampaignCsv)) {
     exit 1
 }
 
+# -Encoding UTF8 ajoute le BOM sous Windows PowerShell 5.1 mais pas sous PowerShell 7+, où
+# Excel (locale FR) lit alors les accents comme du Windows-1252 et les corrompt. On force le
+# BOM sur les deux versions.
+$csvEncoding = if ($PSVersionTable.PSVersion.Major -ge 6) { 'utf8BOM' } else { 'UTF8' }
+
 $campaignRows = Import-Csv $CampaignCsv
 Write-Host "Lignes de campagne chargées : $($campaignRows.Count)"
 
@@ -63,7 +68,7 @@ foreach ($row in $campaignRows) {
     }
 }
 
-$revoked | Sort-Object Person, Application, Role | Export-Csv $OutputCsv -NoTypeInformation -Encoding UTF8
+$revoked | Sort-Object Person, Application, Role | Export-Csv $OutputCsv -NoTypeInformation -Encoding $csvEncoding
 
 Write-Host ""
 Write-Host "=== Résumé de la campagne ===" -ForegroundColor Cyan

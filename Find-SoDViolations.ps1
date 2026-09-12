@@ -45,6 +45,11 @@ if (-not (Test-Path $SoDRulesJson)) {
     exit 1
 }
 
+# -Encoding UTF8 ajoute le BOM sous Windows PowerShell 5.1 mais pas sous PowerShell 7+, où
+# Excel (locale FR) lit alors les accents comme du Windows-1252 et les corrompt. On force le
+# BOM sur les deux versions.
+$csvEncoding = if ($PSVersionTable.PSVersion.Major -ge 6) { 'utf8BOM' } else { 'UTF8' }
+
 $auditRows = Import-Csv $AuditCsv
 $sodRules  = Get-Content $SoDRulesJson -Raw | ConvertFrom-Json
 
@@ -93,7 +98,7 @@ foreach ($person in $accessByPerson.Keys) {
 }
 
 if ($violations.Count -gt 0) {
-    $violations | Sort-Object Person, RuleName | Export-Csv $OutputCsv -NoTypeInformation -Encoding UTF8
+    $violations | Sort-Object Person, RuleName | Export-Csv $OutputCsv -NoTypeInformation -Encoding $csvEncoding
     Write-Host ""
     Write-Host "=== $($violations.Count) violation(s) SoD trouvée(s) -> $OutputCsv ===" -ForegroundColor Yellow
 }
@@ -105,5 +110,5 @@ else {
     # peut pas écrire des en-têtes à partir d'un pipeline vide (Where-Object { $false } produit
     # 0 objet, donc 0 colonne détectée, donc un fichier réellement vide) : on écrit la ligne
     # d'en-têtes directement à la place.
-    "Person,RuleName,Access1,Access2" | Out-File $OutputCsv -Encoding UTF8
+    "Person,RuleName,Access1,Access2" | Out-File $OutputCsv -Encoding $csvEncoding
 }

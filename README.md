@@ -31,6 +31,13 @@ PowerShell 7+.
 
 ## ▶️ Utilisation
 
+Les commandes ci-dessous s'exécutent depuis la racine du repo (`cd IAM-Access-Recertification`
+d'abord). Les chemins sont relatifs à ce dossier — le fichier d'exemple se trouve dans le
+sous-dossier `sample-data/`, pas à la racine. Sous Linux/macOS (PowerShell 7+), utilisez des
+slashs normaux plutôt que des antislashs : `./sample-data/...` au lieu de `.\sample-data\...`.
+Si vous lancez un script sans arguments, il vous demandera chaque valeur une par une : donnez
+le même chemin que dans les exemples ci-dessous.
+
 ### 1. Détection des violations SoD
 
 ```powershell
@@ -102,6 +109,12 @@ suite (testé de bout en bout sur Windows PowerShell 5.1) :
 | [`Find-AlibiRoles.ps1`](Find-AlibiRoles.ps1) | [`Alibi_Roles_Candidates.csv`](Alibi_Roles_Candidates.csv) — 1 candidat : rôle Italians (Scientists), 1 seul membre |
 | [`New-CertificationCampaign.ps1`](New-CertificationCampaign.ps1) | [`CertificationCampaign_2026-08-21.csv`](CertificationCampaign_2026-08-21.csv) — 14 lignes à revoir (1 par personne/accès), partiellement remplie ici à titre d'exemple |
 | [`Complete-CertificationCampaign.ps1`](Complete-CertificationCampaign.ps1) | [`Remediation_Actions.csv`](Remediation_Actions.csv) — révocations issues des décisions ci-dessus |
+
+![Exécution des 4 scripts en console](screenshots/terminal-run.png)
+
+La campagne se remplit à la main dans Excel/LibreOffice (colonne `Decision`) avant l'étape 4 :
+
+![Campagne de recertification ouverte dans un tableur](screenshots/campaign-excel.png)
 
 ## 🔐 Sécurité & précautions
 
