@@ -1,2 +1,4 @@
 ﻿"Person","RuleName","Access1","Access2"
-"tesla","Démo mécanisme — double appartenance groupe parent + sous-groupe","Scientists:Italians","Scientists:"
+"hlemoine","ERP — Admin ERP + accès Comptabilite","ERP:ERP-Admin","Comptabilite:Comptabilite-Standard"
+"jdupont","Comptabilité — Admin Comptabilite + accès ERP","Comptabilite:Comptabilite-Admin","ERP:ERP-Utilisateur"
+"lrousseau","Admin cross-métier — CRM + SIRH","CRM:CRM-Admin","SIRH:SIRH-Admin"

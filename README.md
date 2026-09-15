@@ -31,17 +31,13 @@ PowerShell 7+.
 
 ## ▶️ Utilisation
 
-Les commandes ci-dessous s'exécutent depuis la racine du repo (`cd IAM-Access-Recertification`
-d'abord). Les chemins sont relatifs à ce dossier — le fichier d'exemple se trouve dans le
-sous-dossier `sample-data/`, pas à la racine. Sous Linux/macOS (PowerShell 7+), utilisez des
-slashs normaux plutôt que des antislashs : `./sample-data/...` au lieu de `.\sample-data\...`.
-Si vous lancez un script sans arguments, il vous demandera chaque valeur une par une : donnez
-le même chemin que dans les exemples ci-dessous.
+Les commandes ci-dessous s'exécutent depuis la racine du repo et sont directement à
+copier-coller.
 
 ### 1. Détection des violations SoD
 
 ```powershell
-.\Find-SoDViolations.ps1 -AuditCsv .\sample-data\LDAP_Applications_Roles_Audit.csv -SoDRulesJson .\sod-rules.json
+.\Find-SoDViolations.ps1 -AuditCsv .\sample-data\LDAP_Applications_Roles_Audit.csv -SoDRulesJson .\sod-rules.json -OutputCsv .\SoD_Violations.csv
 ```
 
 Les règles SoD sont définies dans un fichier JSON, une paire d'accès incompatibles par règle
@@ -62,13 +58,15 @@ Un `Role` vide dans la clé (`"Application:"`) désigne l'accès direct à l'app
 
 [`sod-rules-examples.json`](sod-rules-examples.json) est un catalogue de règles SoD classiques
 en entreprise (Finance, Achats, IT, RH, Sécurité, ITIL/SOX) — à adapter avec les vrais noms
-d'application/rôle de votre annuaire, pas exécutable tel quel contre `sample-data/` (qui ne
-contient que les groupes du serveur LDAP public de démo).
+d'application/rôle de votre annuaire ; ce ne sont que des exemples génériques, pas exécutables
+tel quel contre `sample-data/`. Les règles réellement utilisées dans l'exemple ci-dessous
+([`sod-rules.json`](sod-rules.json)) sont, elles, dérivées des cumuls constatés dans
+`sample-data/`.
 
 ### 2. Détection des rôles alibi
 
 ```powershell
-.\Find-AlibiRoles.ps1 -AuditCsv .\sample-data\LDAP_Applications_Roles_Audit.csv -MinMemberThreshold 1
+.\Find-AlibiRoles.ps1 -AuditCsv .\sample-data\LDAP_Applications_Roles_Audit.csv -MinMemberThreshold 1 -OutputCsv .\Alibi_Roles_Candidates.csv
 ```
 
 Signale les rôles à 0 membre ("Vide") et ceux à `MinMemberThreshold` membre(s) ou moins
@@ -79,7 +77,7 @@ réellement obsolète, seulement qu'il mérite qu'on s'y penche.
 ### 3. Génération d'une campagne de recertification
 
 ```powershell
-.\New-CertificationCampaign.ps1 -AuditCsv .\sample-data\LDAP_Applications_Roles_Audit.csv
+.\New-CertificationCampaign.ps1 -AuditCsv .\sample-data\LDAP_Applications_Roles_Audit.csv -OutputCsv .\CertificationCampaign.csv
 ```
 
 Produit un CSV (ouvrable dans Excel/LibreOffice) avec une ligne par personne + accès, et des
@@ -89,7 +87,7 @@ l'application ou le manager concerné. `Decision` attend `Approve` ou `Revoke`.
 ### 4. Traitement de la campagne remplie
 
 ```powershell
-.\Complete-CertificationCampaign.ps1 -CampaignCsv .\CertificationCampaign_2026-08-21.csv
+.\Complete-CertificationCampaign.ps1 -CampaignCsv .\CertificationCampaign.csv -OutputCsv .\Remediation_Actions.csv
 ```
 
 Lit la colonne `Decision` remplie (insensible à la casse) et produit :
@@ -99,16 +97,18 @@ Lit la colonne `Decision` remplie (insensible à la casse) et produit :
 
 ## 📊 Exemple de bout en bout
 
-Avec les données d'exemple ([`sample-data/`](sample-data)) et la règle de démo dans
-[`sod-rules.json`](sod-rules.json), sortie réelle obtenue en exécutant les 4 scripts à la
-suite (testé de bout en bout sur Windows PowerShell 5.1) :
+Avec les données d'exemple ([`sample-data/`](sample-data) — audit réel du lab Active Directory
+décrit dans [LDAP-App-Role-Audit](https://github.com/Anne-LaureS/LDAP-App-Role-Audit), 8
+applications et 21 utilisateurs) et les règles SoD dans [`sod-rules.json`](sod-rules.json)
+(dérivées des cumuls constatés dans ce lab), sortie réelle obtenue en exécutant les 4 scripts à
+la suite :
 
 | Étape | Sortie |
 |---|---|
-| [`Find-SoDViolations.ps1`](Find-SoDViolations.ps1) | [`SoD_Violations.csv`](SoD_Violations.csv) — 1 violation : `tesla` cumule Scientists (accès direct) + rôle Italians |
-| [`Find-AlibiRoles.ps1`](Find-AlibiRoles.ps1) | [`Alibi_Roles_Candidates.csv`](Alibi_Roles_Candidates.csv) — 1 candidat : rôle Italians (Scientists), 1 seul membre |
-| [`New-CertificationCampaign.ps1`](New-CertificationCampaign.ps1) | [`CertificationCampaign_2026-08-21.csv`](CertificationCampaign_2026-08-21.csv) — 14 lignes à revoir (1 par personne/accès), partiellement remplie ici à titre d'exemple |
-| [`Complete-CertificationCampaign.ps1`](Complete-CertificationCampaign.ps1) | [`Remediation_Actions.csv`](Remediation_Actions.csv) — révocations issues des décisions ci-dessus |
+| [`Find-SoDViolations.ps1`](Find-SoDViolations.ps1) | [`SoD_Violations.csv`](SoD_Violations.csv) — 3 violations : `jdupont` (Comptabilite-Admin + ERP-Utilisateur), `hlemoine` (ERP-Admin + Comptabilite-Standard), `lrousseau` (CRM-Admin + SIRH-Admin) |
+| [`Find-AlibiRoles.ps1`](Find-AlibiRoles.ps1) | [`Alibi_Roles_Candidates.csv`](Alibi_Roles_Candidates.csv) — 12 candidats "Quasi-vide" (essentiellement les rôles Admin, à 1 seul membre chacun dans ce lab) |
+| [`New-CertificationCampaign.ps1`](New-CertificationCampaign.ps1) | [`CertificationCampaign.csv`](CertificationCampaign.csv) — 32 lignes à revoir (1 par personne/accès), partiellement remplie ici à titre d'exemple |
+| [`Complete-CertificationCampaign.ps1`](Complete-CertificationCampaign.ps1) | [`Remediation_Actions.csv`](Remediation_Actions.csv) — 3 révocations, correspondant aux 3 violations SoD ci-dessus |
 
 ![Exécution des 4 scripts en console](screenshots/terminal-run.png)
 

@@ -1,7 +1,20 @@
 ﻿[
   {
-    "RuleName": "Démo mécanisme — double appartenance groupe parent + sous-groupe",
-    "Access1": "Scientists:Italians",
-    "Access2": "Scientists:"
+    "RuleName": "Comptabilité — Admin Comptabilite + accès ERP",
+    "Access1": "Comptabilite:Comptabilite-Admin",
+    "Access2": "ERP:ERP-Utilisateur",
+    "Comment": "L'administrateur des comptes ne devrait pas aussi pouvoir opérer dans l'ERP (création de commandes/fournisseurs qu'il contrôlerait ensuite côté comptabilité)."
+  },
+  {
+    "RuleName": "ERP — Admin ERP + accès Comptabilite",
+    "Access1": "ERP:ERP-Admin",
+    "Access2": "Comptabilite:Comptabilite-Standard",
+    "Comment": "L'administrateur ERP a déjà un contrôle large sur les flux ; cumuler un accès comptable opérationnel concentre trop de pouvoir sur la même chaîne financière."
+  },
+  {
+    "RuleName": "Admin cross-métier — CRM + SIRH",
+    "Access1": "CRM:CRM-Admin",
+    "Access2": "SIRH:SIRH-Admin",
+    "Comment": "Cumuler l'administration des données clients (CRM) et des données RH (SIRH) concentre deux domaines sensibles sans lien fonctionnel chez la même personne."
   }
 ]

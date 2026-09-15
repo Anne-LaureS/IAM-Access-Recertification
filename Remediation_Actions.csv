@@ -1,2 +1,4 @@
 ﻿"Person","Application","Role","AccessLabel","Reviewer","Comment"
-"tesla","Scientists","","Scientists (accès direct)","",""
+"hlemoine","ERP","ERP-Admin","ERP / ERP-Admin","","Conflit SoD avec Comptabilite-Standard"
+"jdupont","ERP","ERP-Utilisateur","ERP / ERP-Utilisateur","","Conflit SoD avec Comptabilite-Admin"
+"lrousseau","SIRH","SIRH-Admin","SIRH / SIRH-Admin","","Conflit SoD avec CRM-Admin"
