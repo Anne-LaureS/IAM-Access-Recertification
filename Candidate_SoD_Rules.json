@@ -1,0 +1,6 @@
+﻿{
+    "RuleName":  "Cumul cross-app \u0027Admin\u0027 — CRM + SIRH",
+    "Access1":  "CRM:CRM-Admin",
+    "Access2":  "SIRH:SIRH-Admin",
+    "Comment":  "Cumuler un rôle \u0027Admin\u0027 sur 2 applications sans lien fonctionnel évident concentre deux périmètres sensibles chez la même personne."
+}

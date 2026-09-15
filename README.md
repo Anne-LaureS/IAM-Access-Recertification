@@ -15,14 +15,16 @@ recertification type SailPoint IdentityIQ. Elle **ferme la boucle** de l'audit d
 Prend en entrée le CSV produit par [LDAP-App-Role-Audit](https://github.com/Anne-LaureS/LDAP-App-Role-Audit)
 (ou tout export au même format Application/Role/Members).
 
-Contrairement à `LDAP-App-Role-Audit`, ces 4 scripts ne dépendent d'aucune fonctionnalité
+Contrairement à `LDAP-App-Role-Audit`, ces scripts ne dépendent d'aucune fonctionnalité
 Windows — pur traitement CSV/JSON, testable et utilisable sous Windows, Linux ou macOS avec
 PowerShell 7+.
 
-## ⚙️ Les 4 scripts (dans l'ordre d'exécution)
+## ⚙️ Les scripts (dans l'ordre d'exécution)
 
 | # | Script | Rôle | Sortie |
 |---|---|---|---|
+| 0 | [`Find-CrossAppAdminOverlap.ps1`](Find-CrossAppAdminOverlap.ps1) | *(optionnel)* Amorce des règles SoD candidates quand `sod-rules.json` n'existe pas encore | `Candidate_SoD_Rules.json`, `Candidate_SoD_Rules_Evidence.csv` |
+| — | *(revue métier des candidats, puis écriture de `sod-rules.json`)* | | |
 | 1 | [`Find-SoDViolations.ps1`](Find-SoDViolations.ps1) | Détecte les personnes cumulant deux accès déclarés incompatibles | `SoD_Violations.csv` |
 | 2 | [`Find-AlibiRoles.ps1`](Find-AlibiRoles.ps1) | Repère les rôles vides ou quasi-vides, candidats à nettoyer | `Alibi_Roles_Candidates.csv` |
 | 3 | [`New-CertificationCampaign.ps1`](New-CertificationCampaign.ps1) | Génère une feuille de revue (1 ligne par personne + accès) | `CertificationCampaign_AAAA-MM-JJ.csv` |
@@ -33,6 +35,26 @@ PowerShell 7+.
 
 Les commandes ci-dessous s'exécutent depuis la racine du repo et sont directement à
 copier-coller.
+
+### 0. Amorcer des règles SoD candidates (optionnel, si vous n'avez pas encore de sod-rules.json)
+
+```powershell
+.\Find-CrossAppAdminOverlap.ps1 -AuditCsv .\sample-data\LDAP_Applications_Roles_Audit.csv -PrivilegeKeyword Admin -RulesOutputJson .\Candidate_SoD_Rules.json -EvidenceOutputCsv .\Candidate_SoD_Rules_Evidence.csv
+```
+
+Repère les personnes qui cumulent un rôle contenant `-PrivilegeKeyword` (`Admin` par défaut,
+insensible à la casse/accents) sur **deux applications différentes ou plus**, et génère une
+règle SoD candidate par paire, avec la liste des personnes réellement concernées aujourd'hui
+dans `Candidate_SoD_Rules_Evidence.csv` — pour prioriser la validation métier plutôt que de
+partir d'une page blanche.
+
+⚠️ **Portée volontairement limitée** : ce script ne détecte que les cumuls **privilège +
+privilège** (ex: Admin sur l'application A et Admin sur l'application B). Un cumul asymétrique
+(ex: Admin sur une application + simple accès Utilisateur sur une autre) peut tout autant être
+un conflit métier réel, mais dépend du contexte fonctionnel des deux applications — un mot-clé
+générique ne peut pas le déterminer sans risquer de multiplier les faux positifs (n'importe qui
+ayant un accès ailleurs se ferait signaler). Ces cas-là restent à repérer manuellement en
+inspectant l'audit, comme pour les 2 autres règles de l'exemple ci-dessous.
 
 ### 1. Détection des violations SoD
 
@@ -105,6 +127,7 @@ la suite :
 
 | Étape | Sortie |
 |---|---|
+| [`Find-CrossAppAdminOverlap.ps1`](Find-CrossAppAdminOverlap.ps1) | [`Candidate_SoD_Rules_Evidence.csv`](Candidate_SoD_Rules_Evidence.csv) — 1 candidat trouvé automatiquement : `lrousseau` (CRM-Admin + SIRH-Admin). Ne détecte pas les 2 autres cumuls ci-dessous (asymétriques Admin+non-Admin, hors de sa portée) |
 | [`Find-SoDViolations.ps1`](Find-SoDViolations.ps1) | [`SoD_Violations.csv`](SoD_Violations.csv) — 3 violations : `jdupont` (Comptabilite-Admin + ERP-Utilisateur), `hlemoine` (ERP-Admin + Comptabilite-Standard), `lrousseau` (CRM-Admin + SIRH-Admin) |
 | [`Find-AlibiRoles.ps1`](Find-AlibiRoles.ps1) | [`Alibi_Roles_Candidates.csv`](Alibi_Roles_Candidates.csv) — 12 candidats "Quasi-vide" (essentiellement les rôles Admin, à 1 seul membre chacun dans ce lab) |
 | [`New-CertificationCampaign.ps1`](New-CertificationCampaign.ps1) | [`CertificationCampaign.csv`](CertificationCampaign.csv) — 32 lignes à revoir (1 par personne/accès), partiellement remplie ici à titre d'exemple |
