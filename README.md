@@ -13,7 +13,10 @@ recertification type SailPoint IdentityIQ. Elle **ferme la boucle** de l'audit d
 4. **Traiter** la campagne remplie en actions de remédiation concrètes (accès à révoquer)
 
 Prend en entrée le CSV produit par [LDAP-App-Role-Audit](https://github.com/Anne-LaureS/LDAP-App-Role-Audit)
-(ou tout export au même format Application/Role/Members).
+(ou tout export au même format Application/Role/Members). La suite logique — exécuter
+réellement les révocations décidées ici (et plus largement gérer le cycle de vie des comptes,
+Joiner/Mover/Leaver) — est traitée par
+[IAM-JML-Lifecycle](https://github.com/Anne-LaureS/IAM-JML-Lifecycle).
 
 Contrairement à `LDAP-App-Role-Audit`, ces scripts ne dépendent d'aucune fonctionnalité
 Windows — pur traitement CSV/JSON, testable et utilisable sous Windows, Linux ou macOS avec
@@ -152,8 +155,9 @@ La campagne se remplit à la main dans Excel/LibreOffice (colonne `Decision`) av
   aucun membre (`Members` vide) — un `Role` vide reste un accès légitime (accès direct à
   l'application) à traiter, pas une ligne à ignorer.
 - Les révocations produites par `Complete-CertificationCampaign.ps1` sont une **liste
-  d'actions à exécuter manuellement** (ou via votre outil de provisioning existant) — ce
-  script ne modifie aucun annuaire lui-même.
+  d'actions à exécuter manuellement** (ou via votre outil de provisioning existant — voir
+  [IAM-JML-Lifecycle](https://github.com/Anne-LaureS/IAM-JML-Lifecycle), qui peut exécuter ces
+  révocations sur Active Directory) — ce script ne modifie aucun annuaire lui-même.
 - **Fichiers `.ps1` et `.json` avec BOM UTF-8** : Windows PowerShell 5.1 lit mal les accents
   sans ce marqueur en tête de fichier (texte corrompu, voire erreur de syntaxe). Si vous
   éditez ces fichiers ou en ajoutez de nouveaux (ex: vos propres règles SoD), sauvegardez-les
