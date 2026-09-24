@@ -19,6 +19,9 @@
     Ne se connecte à aucun annuaire : consomme des CSV (voir les fichiers d'entrée ci-dessous),
     comme les autres scripts de ce repo.
 
+    Les valeurs multiples d'une cellule (rôles) sont séparées par « | » et les détails par « - » :
+    un point-virgule serait lu comme un séparateur de colonnes par Excel en français.
+
     Limites :
       - lastLogonTimestamp est répliqué avec un décalage pouvant atteindre ~14 jours : à n'utiliser
         qu'avec des seuils de plusieurs dizaines de jours (30, 60, 90).
@@ -129,7 +132,7 @@ function Add-Finding {
         Enabled        = $Account.Enabled
         LastLogon      = $Account.LastLogon
         InactiveDays   = $Inactive
-        Roles          = ($roleList -join "; ")
+        Roles          = ($roleList -join " | ")
         Detail         = $Detail
     })
 }
@@ -146,16 +149,16 @@ foreach ($a in $accounts) {
 
     if ($ref -and $ref.Status -eq 'Left' -and ($enabled -or $roles.Count -gt 0)) {
         $left = if ($ref.LeaveDate) { "Parti le $($ref.LeaveDate)" } else { "Marqué parti dans le référentiel RH" }
-        Add-Finding $a "Leaver encore actif" "$left ; $state ; $($roles.Count) accès conservé(s)" $roles ""
+        Add-Finding $a "Leaver encore actif" "$left - $state - $($roles.Count) accès conservé(s)" $roles ""
         $raised = $true
     }
 
     if (-not $raised -and -not $enabled -and $roles.Count -gt 0) {
-        Add-Finding $a "Désactivé avec accès" "Compte désactivé ; $($roles.Count) accès conservé(s)" $roles ""
+        Add-Finding $a "Désactivé avec accès" "Compte désactivé - $($roles.Count) accès conservé(s)" $roles ""
     }
 
     if ($ReferentialCsv -and -not $ref -and ($enabled -or $roles.Count -gt 0)) {
-        Add-Finding $a "Orphelin" "Absent du référentiel RH ; $state ; $($roles.Count) accès" $roles ""
+        Add-Finding $a "Orphelin" "Absent du référentiel RH - $state - $($roles.Count) accès" $roles ""
     }
 
     if ($enabled) {

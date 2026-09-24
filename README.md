@@ -107,6 +107,8 @@ réellement obsolète, seulement qu'il mérite qu'on s'y penche.
 .\Find-DormantAccounts.ps1 -AccountsCsv .\sample-data\Accounts_Inventory.csv -AuditCsv .\sample-data\LDAP_Applications_Roles_Audit.csv -ReferentialCsv .\sample-data\HR_Referential.csv -DormantDays 90 -OutputCsv .\Dormant_Accounts.csv
 ```
 
+![Reconstruction du référentiel RH puis détection : 8 constats sur 7 comptes](screenshots/dormant-accounts-run.png)
+
 Trois sources croisées, toutes en CSV (aucune connexion à l'annuaire) :
 - l'**inventaire des comptes** (`Get-LdapAccountInventory.ps1` de
   [LDAP-App-Role-Audit](https://github.com/Anne-LaureS/LDAP-App-Role-Audit)) : état, création,
@@ -133,6 +135,10 @@ Un compte de l'annuaire absent de ces trois sources est un orphelin. Les flux ne
 de départ : `LeaveDate` n'est renseignée que pour l'état de base.
 
 #### Les signaux
+
+Résultat sur le lab, ouvert en tableau (`Dormant_Accounts.csv`) :
+
+![Dormant_Accounts.csv : 8 constats sur 7 comptes](screenshots/dormant-accounts-table.png)
 
 Quatre signaux, un par ligne de résultat (un compte peut en cumuler plusieurs) :
 
