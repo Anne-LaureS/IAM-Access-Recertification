@@ -30,6 +30,7 @@ PowerShell 7+.
 | — | *(revue métier des candidats, puis écriture de `sod-rules.json`)* | | |
 | 1 | [`Find-SoDViolations.ps1`](Find-SoDViolations.ps1) | Détecte les personnes cumulant deux accès déclarés incompatibles | `SoD_Violations.csv` |
 | 2 | [`Find-AlibiRoles.ps1`](Find-AlibiRoles.ps1) | Repère les rôles vides ou quasi-vides, candidats à nettoyer | `Alibi_Roles_Candidates.csv` |
+| 2b | [`Find-DormantAccounts.ps1`](Find-DormantAccounts.ps1) | Détecte les comptes dormants, orphelins, leavers encore actifs et désactivés qui gardent des accès (croise inventaire des comptes, audit des rôles et référentiel RH) | `Dormant_Accounts.csv` |
 | 3 | [`New-CertificationCampaign.ps1`](New-CertificationCampaign.ps1) | Génère une feuille de revue (1 ligne par personne + accès) | `CertificationCampaign_AAAA-MM-JJ.csv` |
 | — | *(remplissage manuel de la colonne Decision par les reviewers)* | | |
 | 4 | [`Complete-CertificationCampaign.ps1`](Complete-CertificationCampaign.ps1) | Traite la feuille remplie en liste de révocations | `Remediation_Actions.csv` |
@@ -99,6 +100,38 @@ Signale les rôles à 0 membre ("Vide") et ceux à `MinMemberThreshold` membre(s
 activité (non disponibles via LDAP seul), le script ne peut pas confirmer qu'un rôle est
 réellement obsolète, seulement qu'il mérite qu'on s'y penche.
 
+### 2b. Comptes dormants, orphelins et leavers encore actifs
+
+```powershell
+.\Find-DormantAccounts.ps1 -AccountsCsv .\sample-data\Accounts_Inventory.csv -AuditCsv .\sample-data\LDAP_Applications_Roles_Audit.csv -ReferentialCsv .\sample-data\HR_Referential.csv -DormantDays 90 -OutputCsv .\Dormant_Accounts.csv
+```
+
+Trois sources croisées, toutes en CSV (aucune connexion à l'annuaire) :
+- l'**inventaire des comptes** (`Get-LdapAccountInventory.ps1` de
+  [LDAP-App-Role-Audit](https://github.com/Anne-LaureS/LDAP-App-Role-Audit)) : état, création,
+  dernière connexion ;
+- l'**audit des rôles**, pour savoir quels accès chaque compte détient encore ;
+- un **référentiel RH** (`SamAccountName`, `Status` Active/Left, `Type` Employee/Admin/Service/Test/
+  Builtin, `Owner`, `LeaveDate`), la source qui dit qui est censé avoir un compte.
+
+Quatre signaux, un par ligne de résultat (un compte peut en cumuler plusieurs) :
+
+| Signal | Condition |
+|---|---|
+| **Leaver encore actif** | le référentiel dit que la personne est partie, mais le compte est activé ou garde des accès |
+| **Désactivé avec accès** | compte désactivé toujours membre d'un ou plusieurs rôles |
+| **Orphelin** | compte absent du référentiel RH, activé ou avec des accès |
+| **Dormant** | compte activé sans connexion depuis `-DormantDays` jours (90 par défaut), ou jamais connecté depuis sa création s'il a plus de `-DormantDays` jours |
+
+La gravité est **Élevée** si un rôle détenu contient `-PrivilegeKeyword` (`Admin` par défaut),
+**Moyenne** si le compte a au moins un accès applicatif, **Faible** sinon. Les comptes intégrés
+(`Type=Builtin` : Administrateur, Invité, krbtgt) sont ignorés. Sans `-ReferentialCsv`, seuls
+« Désactivé avec accès » et « Dormant » sont produits.
+
+⚠️ `lastLogonTimestamp` est répliqué avec un décalage pouvant atteindre environ 14 jours : n'utilisez
+que des seuils de plusieurs dizaines de jours. Ce sont des **candidats à vérifier avec le
+propriétaire du compte**, pas des confirmations.
+
 ### 3. Génération d'une campagne de recertification
 
 ```powershell
@@ -138,8 +171,22 @@ Sortie réelle obtenue en exécutant les 4 scripts à la suite :
 | [`Find-CrossAppAdminOverlap.ps1`](Find-CrossAppAdminOverlap.ps1) | [`Candidate_SoD_Rules_Evidence.csv`](Candidate_SoD_Rules_Evidence.csv) — 4 candidats parmi 23 personnes ayant un rôle Admin : `lrousseau` (CRM + SIRH), `Enzo Riou` (CoreBanking + DevOps), `Fabien Guillot` (Monetique + Risques), `Nicolas Aubert` (ITSM + SecOps). Ne détecte que les cumuls Admin + Admin : les cumuls asymétriques (Admin + accès simple) restent à écrire à la main dans `sod-rules.json` |
 | [`Find-SoDViolations.ps1`](Find-SoDViolations.ps1) | [`SoD_Violations.csv`](SoD_Violations.csv) — **14 violations** pour 13 personnes, dont 11 issues des règles bancaires : Paiements initiateur + validateur (`David Fabre`, `Bastien Henry`), Crédit analyste + décisionnaire (`Maxime Chevalier`), Trésorerie front + back office (`Elodie Loiseau`), Admin Coeur bancaire + validateur Paiements (`Bastien Henry`, `Cecile Durand`), etc. `Cecile Durand` n'a cet accès Admin que **par un groupe imbriqué** : elle n'apparaît pas sans `-ResolveNested` |
 | [`Find-AlibiRoles.ps1`](Find-AlibiRoles.ps1) | [`Alibi_Roles_Candidates.csv`](Alibi_Roles_Candidates.csv) — **24 candidats** : 2 rôles vides (`Credit-Legacy-Admin`, `PAM-Privileged-Test`) et 22 quasi-vides à 1 membre, essentiellement des rôles Admin tenus par un seul administrateur, à arbitrer en revue plutôt qu'à supprimer |
+| [`Find-DormantAccounts.ps1`](Find-DormantAccounts.ps1) | [`Dormant_Accounts.csv`](Dormant_Accounts.csv) — **8 constats sur 7 comptes** (101 comptes examinés, référentiel RH simulé de 97 lignes) : 4 orphelins (`legacy-admin`, `old-user01`, `old-user02`, `test-user`), 2 leavers encore actifs (`former-employee`, `stagiaire-2023`), 1 compte désactivé avec accès (`old-user01`) et 1 dormant réel (un compte personnel de l'annuaire, 148 jours sans connexion). Les 3 leavers traités par JML (désactivés, sans groupe) ne ressortent pas : c'est le bon comportement |
 | [`New-CertificationCampaign.ps1`](New-CertificationCampaign.ps1) | [`CertificationCampaign.csv`](CertificationCampaign.csv) — **166 lignes** à revoir (1 par personne/accès, 92 personnes). Seules les lignes liées aux violations SoD et à un mover mal traité (`Hugo Guerin`) sont décidées ici, à titre d'exemple : 29 décisions |
 | [`Complete-CertificationCampaign.ps1`](Complete-CertificationCampaign.ps1) | [`Remediation_Actions.csv`](Remediation_Actions.csv) — **15 révocations** (14 approuvés, 137 non traités) |
+
+Le **référentiel RH** ([`HR_Referential.csv`](sample-data/HR_Referential.csv)) est **simulé** pour le
+lab : il est construit à partir des flux RH de [IAM-JML-Lifecycle](https://github.com/Anne-LaureS/IAM-JML-Lifecycle)
+et de la liste des comptes admin, service et de test connus. Dans une organisation réelle, il vient du
+SIRH. L'inventaire publié, [`Accounts_Inventory.csv`](sample-data/Accounts_Inventory.csv), est une copie
+de l'export réel où l'identifiant d'un compte personnel a été remplacé par un pseudonyme.
+
+⚠️ Sur ce lab, **une seule** détection repose sur une vraie date de connexion : les comptes ont été
+créés récemment et la plupart ne se sont jamais connectés, donc aucune ancienneté réelle n'est
+disponible. Les comptes dormants « planifiés » (`old-user01`, `legacy-admin`...) sont trouvés par leur
+absence du référentiel RH ou par leur départ, pas par leur ancienneté (un attribut Active Directory
+comme `lastLogonTimestamp` n'est pas modifiable). Le seuil `-DormantDays` fonctionne mais n'est
+démontré que sur ce compte.
 
 Sur le **lab initial** (8 applications, 21 utilisateurs), la même chaîne avait donné 3 violations
 SoD, 12 candidats rôles alibi, une campagne de 32 lignes et 3 révocations.
