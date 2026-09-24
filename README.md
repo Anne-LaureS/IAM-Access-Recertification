@@ -30,6 +30,7 @@ PowerShell 7+.
 | — | *(revue métier des candidats, puis écriture de `sod-rules.json`)* | | |
 | 1 | [`Find-SoDViolations.ps1`](Find-SoDViolations.ps1) | Détecte les personnes cumulant deux accès déclarés incompatibles | `SoD_Violations.csv` |
 | 2 | [`Find-AlibiRoles.ps1`](Find-AlibiRoles.ps1) | Repère les rôles vides ou quasi-vides, candidats à nettoyer | `Alibi_Roles_Candidates.csv` |
+| 2a | [`Build-HrReferential.ps1`](Build-HrReferential.ps1) | *(prépare l'entrée de 2b)* Reconstruit le référentiel RH depuis des sources indépendantes de l'annuaire : état de base du personnel, flux RH rejoués, registre des comptes techniques | `HR_Referential.csv` |
 | 2b | [`Find-DormantAccounts.ps1`](Find-DormantAccounts.ps1) | Détecte les comptes dormants, orphelins, leavers encore actifs et désactivés qui gardent des accès (croise inventaire des comptes, audit des rôles et référentiel RH) | `Dormant_Accounts.csv` |
 | 3 | [`New-CertificationCampaign.ps1`](New-CertificationCampaign.ps1) | Génère une feuille de revue (1 ligne par personne + accès) | `CertificationCampaign_AAAA-MM-JJ.csv` |
 | — | *(remplissage manuel de la colonne Decision par les reviewers)* | | |
@@ -112,7 +113,26 @@ Trois sources croisées, toutes en CSV (aucune connexion à l'annuaire) :
   dernière connexion ;
 - l'**audit des rôles**, pour savoir quels accès chaque compte détient encore ;
 - un **référentiel RH** (`SamAccountName`, `Status` Active/Left, `Type` Employee/Admin/Service/Test/
-  Builtin, `Owner`, `LeaveDate`), la source qui dit qui est censé avoir un compte.
+  Builtin, `Owner`, `LeaveDate`), la source qui dit qui est censé avoir un compte. Il doit venir de
+  sources **indépendantes de l'annuaire** : un référentiel tiré de l'AD lui-même ne peut pas révéler
+  un orphelin. `Build-HrReferential.ps1` l'assemble (voir ci-dessous).
+
+#### Construire le référentiel : `Build-HrReferential.ps1`
+
+```powershell
+.\Build-HrReferential.ps1 -BaselineCsv .\sample-data\HR_Baseline.csv -HRFeedCsv .\sample-data\HR_Feed_Sample.csv, .\sample-data\HR_Feed_Banque.csv, .\sample-data\HR_Feed_Banque_Reprise.csv -RegisterCsv .\sample-data\Technical_Accounts_Register.csv -OutputCsv .\sample-data\HR_Referential.csv
+```
+
+| Source | Contenu | Équivalent en entreprise |
+|---|---|---|
+| `HR_Baseline.csv` | état de base : personnel connu avant les flux (dont deux personnes parties, avec leur date) | SIRH, situation initiale |
+| `HR_Feed_*.csv` | flux Joiner / Mover / Leaver, rejoués **dans l'ordre** ; l'identifiant est calculé comme `New-Joiner.ps1` (initiale + nom, sans accents) | export périodique du SIRH |
+| `Technical_Accounts_Register.csv` | comptes admin, service, test et intégrés, avec type et propriétaire | CMDB / registre IT (pas le SIRH) |
+
+Un compte de l'annuaire absent de ces trois sources est un orphelin. Les flux ne portent pas de date
+de départ : `LeaveDate` n'est renseignée que pour l'état de base.
+
+#### Les signaux
 
 Quatre signaux, un par ligne de résultat (un compte peut en cumuler plusieurs) :
 
@@ -175,11 +195,13 @@ Sortie réelle obtenue en exécutant les 4 scripts à la suite :
 | [`New-CertificationCampaign.ps1`](New-CertificationCampaign.ps1) | [`CertificationCampaign.csv`](CertificationCampaign.csv) — **166 lignes** à revoir (1 par personne/accès, 92 personnes). Seules les lignes liées aux violations SoD et à un mover mal traité (`Hugo Guerin`) sont décidées ici, à titre d'exemple : 29 décisions |
 | [`Complete-CertificationCampaign.ps1`](Complete-CertificationCampaign.ps1) | [`Remediation_Actions.csv`](Remediation_Actions.csv) — **15 révocations** (14 approuvés, 137 non traités) |
 
-Le **référentiel RH** ([`HR_Referential.csv`](sample-data/HR_Referential.csv)) est **simulé** pour le
-lab : il est construit à partir des flux RH de [IAM-JML-Lifecycle](https://github.com/Anne-LaureS/IAM-JML-Lifecycle)
-et de la liste des comptes admin, service et de test connus. Dans une organisation réelle, il vient du
-SIRH. L'inventaire publié, [`Accounts_Inventory.csv`](sample-data/Accounts_Inventory.csv), est une copie
-de l'export réel où l'identifiant d'un compte personnel a été remplacé par un pseudonyme.
+Le **référentiel RH** ([`HR_Referential.csv`](sample-data/HR_Referential.csv), 97 comptes) est
+reconstruit par `Build-HrReferential.ps1` à partir d'un état de base (24 personnes), des flux RH de
+[IAM-JML-Lifecycle](https://github.com/Anne-LaureS/IAM-JML-Lifecycle) (57 arrivées, 3 départs) et d'un
+registre de 16 comptes techniques. **La source RH reste simulée pour le lab** : dans une organisation
+réelle, elle vient du SIRH et de la CMDB. L'inventaire publié,
+[`Accounts_Inventory.csv`](sample-data/Accounts_Inventory.csv), est une copie de l'export réel où
+l'identifiant d'un compte personnel a été remplacé par un pseudonyme.
 
 ⚠️ Sur ce lab, **une seule** détection repose sur une vraie date de connexion : les comptes ont été
 créés récemment et la plupart ne se sont jamais connectés, donc aucune ancienneté réelle n'est

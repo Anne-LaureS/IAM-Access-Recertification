@@ -145,7 +145,8 @@ foreach ($a in $accounts) {
     $raised = $false
 
     if ($ref -and $ref.Status -eq 'Left' -and ($enabled -or $roles.Count -gt 0)) {
-        Add-Finding $a "Leaver encore actif" "Parti le $($ref.LeaveDate) ; $state ; $($roles.Count) accès conservé(s)" $roles ""
+        $left = if ($ref.LeaveDate) { "Parti le $($ref.LeaveDate)" } else { "Marqué parti dans le référentiel RH" }
+        Add-Finding $a "Leaver encore actif" "$left ; $state ; $($roles.Count) accès conservé(s)" $roles ""
         $raised = $true
     }
 
