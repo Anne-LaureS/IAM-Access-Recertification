@@ -16,5 +16,59 @@
     "Access1": "CRM:CRM-Admin",
     "Access2": "SIRH:SIRH-Admin",
     "Comment": "Cumuler l'administration des données clients (CRM) et des données RH (SIRH) concentre deux domaines sensibles sans lien fonctionnel chez la même personne."
+  },
+  {
+    "RuleName": "Paiements — Initiateur + Validateur (4 yeux)",
+    "Access1": "Paiements-SEPA:Paiements-Initiateur",
+    "Access2": "Paiements-SEPA:Paiements-Validateur",
+    "Comment": "Une même personne ne doit pas pouvoir saisir puis valider un ordre de virement : principe des 4 yeux."
+  },
+  {
+    "RuleName": "Crédit — Analyste + Décisionnaire",
+    "Access1": "Credit:Credit-Analyste",
+    "Access2": "Credit:Credit-Decisionnaire",
+    "Comment": "Instruire un dossier et décider de son octroi doit rester séparé pour éviter l'auto-validation d'un crédit."
+  },
+  {
+    "RuleName": "Trésorerie — Front-office + Back-office",
+    "Access1": "Tresorerie-Marches:Tresorerie-FrontOffice",
+    "Access2": "Tresorerie-Marches:Tresorerie-BackOffice",
+    "Comment": "Négocier une opération et la confirmer/la régler doit être séparé (risque de fraude interne sur les marchés)."
+  },
+  {
+    "RuleName": "Admin Coeur bancaire + Validateur Paiements",
+    "Access1": "CoreBanking:CoreBanking-Admin",
+    "Access2": "Paiements-SEPA:Paiements-Validateur",
+    "Comment": "Un administrateur du coeur bancaire pouvant aussi valider des paiements peut créer un compte puis y faire transiter des fonds."
+  },
+  {
+    "RuleName": "Opérateur Coeur bancaire + Validateur KYC",
+    "Access1": "CoreBanking:CoreBanking-Operateur",
+    "Access2": "KYC-LCBFT:KYC-Validateur",
+    "Comment": "Celui qui ouvre ou modifie un compte ne doit pas valider lui-même sa conformité KYC."
+  },
+  {
+    "RuleName": "Approbateur Comptabilité + Initiateur Paiements",
+    "Access1": "Comptabilite:Comptabilite-Approbateur",
+    "Access2": "Paiements-SEPA:Paiements-Initiateur",
+    "Comment": "Approuver une écriture comptable et émettre le paiement associé concentre trop de pouvoir sur la chaîne financière."
+  },
+  {
+    "RuleName": "IT — Admin IT + Admin Sécurité",
+    "Access1": "ITSM:IT-Admin",
+    "Access2": "SecOps:Security-Admin",
+    "Comment": "Administrer l'infrastructure et administrer les outils qui la surveillent permet de neutraliser sa propre traçabilité."
+  },
+  {
+    "RuleName": "DevOps — Admin Dev + Admin Coeur bancaire (production)",
+    "Access1": "DevOps:Dev-Admin",
+    "Access2": "CoreBanking:CoreBanking-Admin",
+    "Comment": "Séparation développement / production : celui qui déploie le code ne doit pas administrer l'environnement de production."
+  },
+  {
+    "RuleName": "Achats — Manager + Approbateur Comptabilité",
+    "Access1": "Achats:Achats-Manager",
+    "Access2": "Comptabilite:Comptabilite-Approbateur",
+    "Comment": "Engager une commande et approuver son règlement comptable concentre toute la chaîne d'achat."
   }
 ]

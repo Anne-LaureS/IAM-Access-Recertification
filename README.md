@@ -122,25 +122,35 @@ Lit la colonne `Decision` remplie (insensible à la casse) et produit :
 
 ## 📊 Exemple de bout en bout
 
-Avec les données d'exemple ([`sample-data/`](sample-data) — audit réel du lab Active Directory
-décrit dans [LDAP-App-Role-Audit](https://github.com/Anne-LaureS/LDAP-App-Role-Audit), 8
-applications et 21 utilisateurs) et les règles SoD dans [`sod-rules.json`](sod-rules.json)
-(dérivées des cumuls constatés dans ce lab), sortie réelle obtenue en exécutant les 4 scripts à
-la suite :
+Les données d'exemple ([`sample-data/`](sample-data)) sont un audit réel du **lab Active Directory
+enrichi** décrit dans [LDAP-App-Role-Audit](https://github.com/Anne-LaureS/LDAP-App-Role-Audit) et
+[IAM-JML-Lifecycle](https://github.com/Anne-LaureS/IAM-JML-Lifecycle) : 20 applications, 81 lignes
+d'audit, 92 personnes. L'audit a été produit avec `-ResolveNested`, qui remplace les groupes
+imbriqués par les personnes qu'ils contiennent ; sans cette option, les accès obtenus via un profil
+`G-ROLE-*` ne seraient pas vus. Les règles SoD sont dans [`sod-rules.json`](sod-rules.json) (12 règles :
+3 du lab initial, 9 bancaires). Les anomalies attendues sont listées dans
+[`Lab_ANOMALIES.md`](https://github.com/Anne-LaureS/IAM-JML-Lifecycle/blob/main/sample-data/Lab_ANOMALIES.md).
+
+Sortie réelle obtenue en exécutant les 4 scripts à la suite :
 
 | Étape | Sortie |
 |---|---|
-| [`Find-CrossAppAdminOverlap.ps1`](Find-CrossAppAdminOverlap.ps1) | [`Candidate_SoD_Rules_Evidence.csv`](Candidate_SoD_Rules_Evidence.csv) — 1 candidat trouvé automatiquement : `lrousseau` (CRM-Admin + SIRH-Admin). Ne détecte pas les 2 autres cumuls ci-dessous (asymétriques Admin+non-Admin, hors de sa portée) |
-| [`Find-SoDViolations.ps1`](Find-SoDViolations.ps1) | [`SoD_Violations.csv`](SoD_Violations.csv) — 3 violations : `jdupont` (Comptabilite-Admin + ERP-Utilisateur), `hlemoine` (ERP-Admin + Comptabilite-Standard), `lrousseau` (CRM-Admin + SIRH-Admin) |
-| [`Find-AlibiRoles.ps1`](Find-AlibiRoles.ps1) | [`Alibi_Roles_Candidates.csv`](Alibi_Roles_Candidates.csv) — 12 candidats "Quasi-vide" (essentiellement les rôles Admin, à 1 seul membre chacun dans ce lab) |
-| [`New-CertificationCampaign.ps1`](New-CertificationCampaign.ps1) | [`CertificationCampaign.csv`](CertificationCampaign.csv) — 32 lignes à revoir (1 par personne/accès), partiellement remplie ici à titre d'exemple |
-| [`Complete-CertificationCampaign.ps1`](Complete-CertificationCampaign.ps1) | [`Remediation_Actions.csv`](Remediation_Actions.csv) — 3 révocations, correspondant aux 3 violations SoD ci-dessus |
+| [`Find-CrossAppAdminOverlap.ps1`](Find-CrossAppAdminOverlap.ps1) | [`Candidate_SoD_Rules_Evidence.csv`](Candidate_SoD_Rules_Evidence.csv) — 4 candidats parmi 23 personnes ayant un rôle Admin : `lrousseau` (CRM + SIRH), `Enzo Riou` (CoreBanking + DevOps), `Fabien Guillot` (Monetique + Risques), `Nicolas Aubert` (ITSM + SecOps). Ne détecte que les cumuls Admin + Admin : les cumuls asymétriques (Admin + accès simple) restent à écrire à la main dans `sod-rules.json` |
+| [`Find-SoDViolations.ps1`](Find-SoDViolations.ps1) | [`SoD_Violations.csv`](SoD_Violations.csv) — **14 violations** pour 13 personnes, dont 11 issues des règles bancaires : Paiements initiateur + validateur (`David Fabre`, `Bastien Henry`), Crédit analyste + décisionnaire (`Maxime Chevalier`), Trésorerie front + back office (`Elodie Loiseau`), Admin Coeur bancaire + validateur Paiements (`Bastien Henry`, `Cecile Durand`), etc. `Cecile Durand` n'a cet accès Admin que **par un groupe imbriqué** : elle n'apparaît pas sans `-ResolveNested` |
+| [`Find-AlibiRoles.ps1`](Find-AlibiRoles.ps1) | [`Alibi_Roles_Candidates.csv`](Alibi_Roles_Candidates.csv) — **24 candidats** : 2 rôles vides (`Credit-Legacy-Admin`, `PAM-Privileged-Test`) et 22 quasi-vides à 1 membre, essentiellement des rôles Admin tenus par un seul administrateur, à arbitrer en revue plutôt qu'à supprimer |
+| [`New-CertificationCampaign.ps1`](New-CertificationCampaign.ps1) | [`CertificationCampaign.csv`](CertificationCampaign.csv) — **166 lignes** à revoir (1 par personne/accès, 92 personnes). Seules les lignes liées aux violations SoD et à un mover mal traité (`Hugo Guerin`) sont décidées ici, à titre d'exemple : 29 décisions |
+| [`Complete-CertificationCampaign.ps1`](Complete-CertificationCampaign.ps1) | [`Remediation_Actions.csv`](Remediation_Actions.csv) — **15 révocations** (14 approuvés, 137 non traités) |
 
-![Exécution des 4 scripts en console](screenshots/terminal-run.png)
+Sur le **lab initial** (8 applications, 21 utilisateurs), la même chaîne avait donné 3 violations
+SoD, 12 candidats rôles alibi, une campagne de 32 lignes et 3 révocations.
 
-La campagne se remplit à la main dans Excel/LibreOffice (colonne `Decision`) avant l'étape 4 :
+La campagne se remplit à la main dans Excel/LibreOffice (colonne `Decision`) avant l'étape 4. Ci-dessous, la campagne du lab enrichi filtrée sur les lignes décidées (14 `Approve`, 15 `Revoke`) :
 
-![Campagne de recertification ouverte dans un tableur](screenshots/campaign-excel.png)
+![Campagne de recertification filtrée sur les décisions prises](screenshots/campaign-decisions.png)
+
+Puis le traitement de la campagne par `Complete-CertificationCampaign.ps1` : 166 accès revus, 14 approuvés, 15 à révoquer, 137 non traités (lignes sans décision) :
+
+![Traitement de la campagne : 15 accès à révoquer](screenshots/campaign-completion.png)
 
 ## 🔐 Sécurité & précautions
 

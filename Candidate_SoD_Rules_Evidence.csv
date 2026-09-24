@@ -1,2 +1,5 @@
 ﻿"RuleName","Access1","Access2","Comment","PeopleAffectedNow","PeopleNames"
+"Cumul cross-app 'Admin' — CoreBanking + DevOps","CoreBanking:CoreBanking-Admin","DevOps:Dev-Admin","Cumuler un rôle 'Admin' sur 2 applications sans lien fonctionnel évident concentre deux périmètres sensibles chez la même personne.","1","Enzo Riou"
+"Cumul cross-app 'Admin' — ITSM + SecOps","ITSM:IT-Admin","SecOps:Security-Admin","Cumuler un rôle 'Admin' sur 2 applications sans lien fonctionnel évident concentre deux périmètres sensibles chez la même personne.","1","Nicolas Aubert"
+"Cumul cross-app 'Admin' — Monetique + Risques","Monetique:Monetique-Admin","Risques:Risques-Admin","Cumuler un rôle 'Admin' sur 2 applications sans lien fonctionnel évident concentre deux périmètres sensibles chez la même personne.","1","Fabien Guillot"
 "Cumul cross-app 'Admin' — CRM + SIRH","CRM:CRM-Admin","SIRH:SIRH-Admin","Cumuler un rôle 'Admin' sur 2 applications sans lien fonctionnel évident concentre deux périmètres sensibles chez la même personne.","1","lrousseau"
