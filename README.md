@@ -3,6 +3,7 @@
 ![PowerShell](https://img.shields.io/badge/PowerShell-5391FE?style=for-the-badge&logo=powershell&logoColor=white)
 ![IAM](https://img.shields.io/badge/IAM-Access%20Governance-0d1117?style=for-the-badge)
 ![Cross Platform](https://img.shields.io/badge/Cross%20Platform-Windows%20%7C%20Linux%20%7C%20macOS-6e40c9?style=for-the-badge)
+[![Licence MIT](https://img.shields.io/badge/Licence-MIT-0d1117?style=for-the-badge)](LICENSE)
 
 Boîte à outils PowerShell open source de gouvernance des accès IAM, inspirée des campagnes de
 recertification type SailPoint IdentityIQ. Elle **ferme la boucle** de l'audit d'accès :
@@ -247,3 +248,10 @@ Puis le traitement de la campagne par `Complete-CertificationCampaign.ps1` : 166
   sans ce marqueur en tête de fichier (texte corrompu, voire erreur de syntaxe). Si vous
   éditez ces fichiers ou en ajoutez de nouveaux (ex: vos propres règles SoD), sauvegardez-les
   en UTF-8 avec BOM (`utf-8-sig`), pas en UTF-8 simple.
+
+---
+
+## 📜 Licence
+
+Publié sous licence [MIT](LICENSE) © 2026 Anne-LaureS : réutilisation libre, à condition de conserver la
+mention de copyright. Fourni « tel quel », sans garantie.
