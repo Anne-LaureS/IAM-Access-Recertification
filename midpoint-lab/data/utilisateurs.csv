@@ -1,0 +1,13 @@
+matricule,prenom,nom,login,email,departement,poste,manager,statut,date_sortie
+E1001,Alice,Martin,amartin,alice.martin@example.test,Finance,Responsable comptable,,actif,
+E1002,Bruno,Lefevre,blefevre,bruno.lefevre@example.test,Finance,Comptable,E1001,actif,
+E1003,Claire,Dubois,cdubois,claire.dubois@example.test,Finance,Comptable,E1001,actif,
+E1004,David,Moreau,dmoreau,david.moreau@example.test,RH,Directeur RH,,actif,
+E1005,Emma,Laurent,elaurent,emma.laurent@example.test,RH,Gestionnaire paie,E1004,actif,
+E1006,Fabien,Simon,fsimon,fabien.simon@example.test,IT,Administrateur systemes,,actif,
+E1007,Gaelle,Michel,gmichel,gaelle.michel@example.test,IT,Developpeuse,E1006,actif,
+E1008,Hugo,Garcia,hgarcia,hugo.garcia@example.test,Achats,Acheteur,,actif,
+E1009,Ines,Roux,iroux,ines.roux@example.test,Achats,Responsable achats,,actif,
+E1010,Julien,Fournier,jfournier,julien.fournier@example.test,IT,Technicien support,E1006,inactif,2026-09-30
+E1011,Karine,Girard,kgirard,karine.girard@example.test,Finance,Controleuse de gestion,E1001,actif,
+E1012,Louis,Bonnet,lbonnet,alice.martin@example.test,Achats,Assistant achats,E1009,actif,
