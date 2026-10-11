@@ -228,6 +228,17 @@ Puis le traitement de la campagne par `Complete-CertificationCampaign.ps1` : 166
 
 ![Traitement de la campagne : 15 accès à révoquer](screenshots/campaign-completion.png)
 
+## 🧪 Comparaison avec un outil IGA
+
+Les mêmes contrôles ont été rejoués sur une plateforme IGA, [Evolveum midPoint](midpoint-lab/README.md),
+sur le même annuaire de test. À périmètre égal (appartenances directes), midPoint retrouve les mêmes
+comptes orphelins, leavers encore actifs et désactivés avec accès, les mêmes appartenances (158 sur 158)
+et les mêmes violations SoD (13 sur 13). Les deux approches couvrent les mêmes besoins ; elles diffèrent
+par la méthode : fichiers CSV et liste de révocations à exécuter pour les scripts, journal d'audit et
+révocation appliquée par l'outil pour midPoint.
+
+Le lab, la méthode et les mesures sont dans [`midpoint-lab/`](midpoint-lab/README.md).
+
 ## 🔐 Sécurité & précautions
 
 - Ces scripts ne se connectent à aucun annuaire — ils ne consomment que des CSV/JSON déjà
