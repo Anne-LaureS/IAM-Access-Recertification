@@ -48,7 +48,7 @@ services:
         condition: service_started
     command: ["/opt/midpoint/bin/midpoint.sh", "container"]
     ports:
-      - "127.0.0.1:8080:8080"   # accessible uniquement depuis votre machine
+      - "127.0.0.1:${MP_PORT:-8888}:8080"   # accessible uniquement depuis votre machine
     environment:
       - MP_SET_midpoint_repository_jdbcUsername=midpoint
       - MP_SET_midpoint_repository_jdbcPassword=${DB_PASSWORD}
