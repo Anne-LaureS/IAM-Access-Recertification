@@ -2,6 +2,7 @@
 
 ![PowerShell](https://img.shields.io/badge/PowerShell-5391FE?style=for-the-badge&logo=powershell&logoColor=white)
 ![IAM](https://img.shields.io/badge/IAM-Access%20Governance-0d1117?style=for-the-badge)
+[![midPoint](https://img.shields.io/badge/midPoint-comparaison%20IGA-0b6fa4?style=for-the-badge)](midpoint-lab/README.md)
 ![Cross Platform](https://img.shields.io/badge/Cross%20Platform-Windows%20%7C%20Linux%20%7C%20macOS-6e40c9?style=for-the-badge)
 [![Licence MIT](https://img.shields.io/badge/Licence-MIT-0d1117?style=for-the-badge)](LICENSE)
 
@@ -227,6 +228,17 @@ La campagne se remplit à la main dans Excel/LibreOffice (colonne `Decision`) av
 Puis le traitement de la campagne par `Complete-CertificationCampaign.ps1` : 166 accès revus, 14 approuvés, 15 à révoquer, 137 non traités (lignes sans décision) :
 
 ![Traitement de la campagne : 15 accès à révoquer](screenshots/campaign-completion.png)
+
+## 🧪 Comparaison avec un outil IGA
+
+Les mêmes contrôles ont été rejoués sur une plateforme IGA, [Evolveum midPoint](midpoint-lab/README.md),
+sur le même annuaire de test. À périmètre égal (appartenances directes), midPoint retrouve les mêmes
+comptes orphelins, leavers encore actifs et désactivés avec accès, les mêmes appartenances (158 sur 158)
+et les mêmes violations SoD (13 sur 13). Les deux approches couvrent les mêmes besoins ; elles diffèrent
+par la méthode : fichiers CSV et liste de révocations à exécuter pour les scripts, journal d'audit et
+révocation appliquée par l'outil pour midPoint.
+
+Le lab, la méthode et les mesures sont dans [`midpoint-lab/`](midpoint-lab/README.md).
 
 ## 🔐 Sécurité & précautions
 
