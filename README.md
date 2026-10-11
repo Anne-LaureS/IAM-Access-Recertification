@@ -238,6 +238,8 @@ et les mêmes violations SoD (13 sur 13). Les deux approches couvrent les mêmes
 par la méthode : fichiers CSV et liste de révocations à exécuter pour les scripts, journal d'audit et
 révocation appliquée par l'outil pour midPoint.
 
+![midPoint connecté à l'annuaire et au référentiel RH](midpoint-lab/captures/57-trois-ressources.png)
+
 Le lab, la méthode et les mesures sont dans [`midpoint-lab/`](midpoint-lab/README.md).
 
 ## 🔐 Sécurité & précautions
