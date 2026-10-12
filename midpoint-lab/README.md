@@ -34,7 +34,7 @@ place sur le même périmètre que midPoint.
 | Désactivé avec accès   | 1                          | 1                  | ✅ 1                                    |
 | Appartenances aux groupes | 166                        | 158                | ✅ 158 (les mêmes)                     |
 | Violations SoD            | 14                         | 13                 | ✅ 13                                   |
-| Rôles vides | 2 | 2 | ⚠️ 7 : les mêmes 2, plus 5 rôles dont le seul membre est un groupe imbriqué |
+| Rôles alibi (sans membre) | 2 | 2 | ⚠️ 7 : les mêmes 2, plus 5 rôles dont le seul membre est un groupe imbriqué |
 | Comptes dormants          | 1                          | 1                  | ❓ donnée trop pauvre                  |
 
 **À périmètre égal (accès directs), midPoint égale les scripts** sur les orphelins, les leavers, les comptes désactivés,
@@ -42,7 +42,7 @@ les appartenances et la SoD. Deux écarts subsistent, expliqués :
 
 - **Groupes imbriqués** : midPoint ne les suit pas tant que la hiérarchie n'est pas modélisée (8
   appartenances et 1 violation SoD de moins que les scripts qui suivent les accès indirects).
-- **Rôles vides** : un rôle dont le seul membre est un groupe imbriqué (`G-ROLE-…`) est vide pour
+- **Rôles alibi, cas des rôles sans membre** : un rôle dont le seul membre est un groupe imbriqué (`G-ROLE-…`) est vide pour
   midPoint, qui ne compte que des utilisateurs, mais pas pour le script, qui compte le groupe comme
   membre. Les 5 rôles en plus sont dans ce cas : `Achats-Admin`, `Credit-Admin`, `KYC-Admin`,
   `Paiements-Admin` et `Tresorerie-Admin`.
