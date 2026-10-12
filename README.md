@@ -10,7 +10,7 @@ Boîte à outils PowerShell open source de gouvernance des accès IAM, inspirée
 recertification type SailPoint IdentityIQ. Elle **ferme la boucle** de l'audit d'accès :
 
 1. **Détecter** les violations de séparation des tâches (SoD)
-2. **Repérer** les rôles "alibi" (définis mais quasi-inutilisés)
+2. **Repérer** les rôles « alibi » (sans aucun membre) et les rôles quasi-vides, candidats à la revue
 3. **Générer** une campagne de recertification à faire revoir par les propriétaires d'accès
 4. **Traiter** la campagne remplie en actions de remédiation concrètes (accès à révoquer)
 
