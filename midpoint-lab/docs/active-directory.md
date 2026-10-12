@@ -157,7 +157,8 @@ rôles reliés entre eux, ce qui n'a pas été fait ici.
 **Désactivé avec accès.** Un utilisateur désactivé qui garde au moins une attribution de rôle : midPoint
 en trouve **1**, le même compte que le script (1 sur 1).
 
-**Rôles vides.** Un rôle importé d'un groupe sans aucune attribution :
+**Rôles alibi : les rôles sans membre.** Un rôle « alibi » est défini mais quasi-inutilisé. Seul le cas
+extrême a été mesuré : un rôle importé d'un groupe sans aucune attribution.
 
 | | Rôles sans membre |
 |---|---|
@@ -197,7 +198,7 @@ Les scripts `Get-LdapAppRoleAudit.ps1` et `Find-SoDViolations.ps1` ont été rel
 | Appartenances (compte, rôle) | 158 | 158 | aucun, les mêmes couples |
 | Violations SoD | 13 | 13 | aucun |
 | Signaux « orphelin », « leaver », « désactivé avec accès » | 6, 2, 1 | 6, 2, 1 | aucun |
-| Rôles vides | 2 | 7 | définition différente |
+| Rôles alibi (sans membre) | 2 | 7 | définition différente |
 
 Pour les rôles vides, l'audit compte comme membre un groupe imbriqué (par exemple `G-ROLE-…` dans
 `CoreBanking-Admin`), même sans résolution : le rôle n'est donc pas vide pour le script. midPoint, qui ne
